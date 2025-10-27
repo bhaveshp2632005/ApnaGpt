@@ -22,13 +22,13 @@ export const AuthProvider = ({ children }) => {
 
         if (token) {
           // Local JWT login
-          res = await axios.get("http://localhost:8000/auth/profile", {
+          res = await axios.get("https://apnagpt-backend-4u32.onrender.com/auth/profile", {
             headers: { Authorization: `Bearer ${token}` },
             withCredentials: true,
           });
         } else {
           // Google login (cookie-based session)
-          res = await axios.get("http://localhost:8000/auth/me", {
+          res = await axios.get("https://apnagpt-backend-4u32.onrender.com/auth/me", {
             withCredentials: true,
           });
         }
