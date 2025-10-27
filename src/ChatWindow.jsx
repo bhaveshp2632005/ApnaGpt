@@ -32,7 +32,7 @@ function ChatWindow() {
       return;
     } else {
       // Google or external provider logout
-      await fetch("http://localhost:8000/auth/logout", {
+      await fetch("https://apnagpt-backend-4u32.onrender.com/auth/logout", {
         method: "POST",
         credentials: "include",
       });
@@ -60,7 +60,7 @@ function ChatWindow() {
   try {
     const token = localStorage.getItem("token"); // ✅ get JWT from storage
 
-    const response = await fetch("http://localhost:8000/api/chat", {
+    const response = await fetch("https://apnagpt-backend-4u32.onrender.com/api/chat", {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
