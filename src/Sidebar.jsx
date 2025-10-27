@@ -25,7 +25,7 @@ function Sidebar() {
   // ✅ Fetch threads securely
   const getAllThreads = async () => {
     try {
-      const response = await fetch("http://localhost:8000/api/threads", {
+      const response = await fetch("https://apnagpt-backend-4u32.onrender.com/api/threads", {
         method: "GET",
         headers: {
           "Content-Type": "application/json",
@@ -77,7 +77,7 @@ function Sidebar() {
   const changeThread = async (newThreadId) => {
     setCurrThreadId(newThreadId);
     try {
-      const response = await fetch(`http://localhost:8000/api/threads/${newThreadId}`, {
+      const response = await fetch(`https://apnagpt-backend-4u32.onrender.com/api/threads/${newThreadId}`, {
         headers: {
           "Content-Type": "application/json",
           Authorization: `Bearer ${token}`,
@@ -104,7 +104,7 @@ function Sidebar() {
 
   const deleteThread = async (threadId) => {
     try {
-      const response = await fetch(`http://localhost:8000/api/threads/${threadId}`, {
+      const response = await fetch(`https://apnagpt-backend-4u32.onrender.com/api/threads/${threadId}`, {
         method: "DELETE",
         headers: {
           Authorization: `Bearer ${token}`,
