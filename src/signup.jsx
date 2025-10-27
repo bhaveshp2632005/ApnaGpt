@@ -20,7 +20,7 @@ export default function SignupPage() {
 
     try {
       const res = await axios.post(
-        "http://localhost:8000/auth/signup",
+        "https://apnagpt-backend-4u32.onrender.com/auth/signup",
         { name, email, password },
         { withCredentials: true }
       );
@@ -36,7 +36,7 @@ export default function SignupPage() {
   };
 
   const handleGoogleSignup = () => {
-    window.location.href = "http://localhost:8000/auth/google";
+    window.location.href = "https://apnagpt-backend-4u32.onrender.com/auth/google";
   };
 
   return (
