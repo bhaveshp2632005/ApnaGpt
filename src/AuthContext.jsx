@@ -57,7 +57,7 @@ export const AuthProvider = ({ children }) => {
 
   const logout = async () => {
     try {
-      await axios.post("http://localhost:8000/auth/logout", {}, { withCredentials: true });
+      await axios.post("https://apnagpt-backend-4u32.onrender.com/auth/logout", {}, { withCredentials: true });
     } catch (err) {
       console.error("Logout error:", err.message);
     } finally {
