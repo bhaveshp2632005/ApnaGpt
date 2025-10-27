@@ -23,7 +23,7 @@ export default function LoginPage() {
 
     try {
       const res = await axios.post(
-        "http://localhost:8000/auth/login",
+        "https://apnagpt-backend-4u32.onrender.com/auth/login",
         { email, password },
         { withCredentials: true }
       );
