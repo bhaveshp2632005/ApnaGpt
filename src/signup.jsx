@@ -2,6 +2,7 @@ import React, { useState, useContext } from "react";
 import { useNavigate } from "react-router-dom";
 import axios from "axios";
 import { AuthContext } from "./AuthContext.jsx";
+import { API_BASE_URL } from "./config";
 
 export default function SignupPage() {
   const [name, setName] = useState("");
@@ -20,7 +21,7 @@ export default function SignupPage() {
 
     try {
       const res = await axios.post(
-        "https://apnagpt-backend-4u32.onrender.com/auth/signup",
+        `${API_BASE_URL}/auth/signup`,
         { name, email, password },
         { withCredentials: true }
       );
@@ -36,7 +37,7 @@ export default function SignupPage() {
   };
 
   const handleGoogleSignup = () => {
-    window.location.href = "https://apnagpt-backend-4u32.onrender.com/auth/google";
+    window.location.href = `${API_BASE_URL}/auth/google`;
   };
 
   return (

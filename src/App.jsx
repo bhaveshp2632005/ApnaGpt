@@ -39,9 +39,9 @@ const App = () => {
 
   };
 
-  return (
+  return (<Router>
     <AuthProvider>
-      <Router>
+      
         <Routes>
           <Route path="/login" element={<LoginPage />} />
           <Route path="/signup" element={<SignupPage />} />
@@ -60,8 +60,9 @@ const App = () => {
             }
           />
         </Routes>
-      </Router>
+      
     </AuthProvider>
+    </Router>
   );
 };
 

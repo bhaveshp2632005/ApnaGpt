@@ -4,6 +4,7 @@ import { MyContext } from "./MyContext.jsx";
 import { v4 as uuidv4 } from "uuid";
 import { AuthContext } from "./AuthContext.jsx";
 import { X } from "react-feather";
+import { API_BASE_URL } from "./config";
 
 function Sidebar() {
   const {
@@ -25,7 +26,7 @@ function Sidebar() {
   // ✅ Fetch threads securely
   const getAllThreads = async () => {
     try {
-      const response = await fetch("https://apnagpt-backend-4u32.onrender.com/api/threads", {
+      const response = await fetch(`${API_BASE_URL}/api/threads`, {
         method: "GET",
         headers: {
           "Content-Type": "application/json",
@@ -77,7 +78,7 @@ function Sidebar() {
   const changeThread = async (newThreadId) => {
     setCurrThreadId(newThreadId);
     try {
-      const response = await fetch(`https://apnagpt-backend-4u32.onrender.com/api/threads/${newThreadId}`, {
+      const response = await fetch(`${API_BASE_URL}/api/threads/${newThreadId}`, {
         headers: {
           "Content-Type": "application/json",
           Authorization: `Bearer ${token}`,
@@ -104,7 +105,7 @@ function Sidebar() {
 
   const deleteThread = async (threadId) => {
     try {
-      const response = await fetch(`https://apnagpt-backend-4u32.onrender.com/api/threads/${threadId}`, {
+      const response = await fetch(`${API_BASE_URL}/api/threads/${threadId}`, {
         method: "DELETE",
         headers: {
           Authorization: `Bearer ${token}`,
@@ -168,7 +169,7 @@ function Sidebar() {
         <hr />
         <div className="user-info">
           <img
-            src={user?.profilePic || "src/assets/image.png"}
+            src={ user?.profilePic || "src/assets/image.png"}
             alt={user?.name}
             className="user-logo"
           />

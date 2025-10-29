@@ -3,6 +3,7 @@ import { Mail, Lock, Chrome, Eye, EyeOff, ShieldAlert } from "lucide-react";
 import axios from "axios";
 import { useNavigate } from "react-router-dom";
 import { AuthContext } from "./AuthContext.jsx";
+import { API_BASE_URL } from "./config";
 
 export default function LoginPage() {
   const [email, setEmail] = useState("");
@@ -23,7 +24,7 @@ export default function LoginPage() {
 
     try {
       const res = await axios.post(
-        "https://apnagpt-backend-4u32.onrender.com/auth/login",
+        `${API_BASE_URL}/auth/login`,
         { email, password },
         { withCredentials: true }
       );
@@ -39,7 +40,7 @@ export default function LoginPage() {
 
   // 🌐 Google Login Redirect
   const handleGoogleLogin = () => {
-    window.location.href = "https://apnagpt-backend-4u32.onrender.com/auth/google";
+    window.location.href = `${API_BASE_URL}/auth/google`;
   };
 
   return (

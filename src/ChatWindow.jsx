@@ -3,8 +3,9 @@ import Chat from "./Chat.jsx";
 import { MyContext } from "./MyContext.jsx";
 import { useContext, useState } from "react";
 import { ScaleLoader } from "react-spinners";
-import { Link, useNavigate } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
 import { AuthContext } from "./AuthContext.jsx";
+import { API_BASE_URL } from "./config";
 
 function ChatWindow() {
   const {
@@ -15,97 +16,106 @@ function ChatWindow() {
     setPrevChats,
     setNewChat,
   } = useContext(MyContext);
-  
-  const { user, setUser,logout } = useContext(AuthContext);
+
+  const { user, setUser, logout } = useContext(AuthContext);
   const navigate = useNavigate();
 
   const [loading, setLoading] = useState(false);
   const [isOpen, setIsOpen] = useState(false);
 
-  const handlelogout = async () => {
-  try {
-  
-    if (user.authProvider === "local") {
-      // Local login logout
-      await logout();
+  // ---------------- LOGOUT FUNCTION ----------------
+  const handleLogout = async () => {
+    try {
+      if (user?.authProvider === "local") {
+        // Local login logout (JWT)
+        await logout();
+      } else {
+        // Google or external provider logout (session)
+        await fetch(`${API_BASE_URL}/auth/logout`, {
+          method: "POST",
+          credentials: "include",
+        });
+      }
+
+      // Clear user context and redirect
+      setUser(null);
       navigate("/login");
-      return;
-    } else {
-      // Google or external provider logout
-      await fetch("https://apnagpt-backend-4u32.onrender.com/auth/logout", {
-        method: "POST",
-        credentials: "include",
-      });
+    } catch (err) {
+      console.error("Logout error:", err);
+      navigate("/login");
     }
+  };
 
-    // Clear user from context
-    setUser(null);
-
-    // Navigate to login
-    navigate("/login");
-  } catch (err) {
-    console.error("Logout error:", err);
-    // Still navigate to login even if logout fails
-    navigate("/login");
-  }
-};
-
-
+  // ---------------- SEND CHAT MESSAGE ----------------
   const getReply = async () => {
-  if (!prompt) return;
+    if (!prompt) return;
 
-  setLoading(true);
-  setNewChat(false);
+    setLoading(true);
+    setNewChat(false);
 
-  try {
-    const token = localStorage.getItem("token"); // ✅ get JWT from storage
+    try {
+      const token = localStorage.getItem("token");
 
-    const response = await fetch("https://apnagpt-backend-4u32.onrender.com/api/chat", {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-        Authorization: `Bearer ${token}`, // ✅ attach JWT
-      },
-      body: JSON.stringify({
-        message: prompt,
-        threadId: currThreadId,
-      }),
-    });
+      // Build request options dynamically
+      const fetchOptions = {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          message: prompt,
+          threadId: currThreadId,
+        }),
+      };
 
-    if (response.status === 401) {
-      alert("Session expired or unauthorized. Please log in again.");
-      navigate("/login");
-      return;
+      if (token) {
+        // Local/JWT user
+        fetchOptions.headers.Authorization = `Bearer ${token}`;
+      } else {
+        // Google session user
+        fetchOptions.credentials = "include";
+      }
+
+      // console.log("🔹 Sending chat request with:", token ? "JWT" : "Google Session");
+
+      const response = await fetch(`${API_BASE_URL}/api/chat`, fetchOptions);
+
+      if (response.status === 401) {
+        alert("Session expired or unauthorized. Please log in again.");
+        navigate("/login");
+        return;
+      }
+
+      if (!response.ok) {
+        const err = await response.json();
+        throw new Error(err.message || "Chat API error");
+      }
+
+      const res = await response.json();
+
+      // ✅ set reply and add both user & assistant messages
+      setReply(res.reply);
+      setPrevChats((prev) => [
+        ...prev,
+        { role: "user", content: prompt },
+        { role: "assistant", content: res.reply },
+      ]);
+    } catch (err) {
+      console.error("❌ Chat request error:", err);
+      alert("Something went wrong. Please try again.");
+    } finally {
+      setPrompt("");
+      setLoading(false);
     }
+  };
 
-    const res = await response.json();
-
-    // ✅ set reply and add both user & assistant messages
-    setReply(res.reply);
-    setPrevChats((prev) => [
-      ...prev,
-      { role: "user", content: prompt },
-      { role: "assistant", content: res.reply },
-    ]);
-
-  } catch (err) {
-    console.error("Chat request error:", err);
-    alert("Something went wrong. Please try again.");
-  }
-
-  setPrompt("");
-  setLoading(false);
-};
-
-  // Handle dropdown toggle
+  // ---------------- PROFILE DROPDOWN ----------------
   const handleProfileClick = () => {
     setIsOpen(!isOpen);
   };
 
-  // Return null if user is not logged in
-  if (!user) {
-    return null;
-  }
+  // If no user found (unauthenticated), show nothing
+  if (!user) return null;
 
   return (
     <div className="chatWindow">
@@ -113,14 +123,18 @@ function ChatWindow() {
         <span className={`name${isOpen ? " active" : ""}`}>ApnaGPT</span>
         <div className="userIconDiv" onClick={handleProfileClick}>
           <span className="userIcon">
-           <img src={user.profilePic||"src/assets/image.png"} alt={user.name} className="userIcon" />
+            <img
+              src={user.profilePic || "src/assets/image.png"}
+              alt={user.name}
+              className="userIcon"
+            />
           </span>
         </div>
       </div>
 
       {isOpen && (
         <div className="dropDown">
-          <div className="dropDownItem" onClick={handlelogout}>
+          <div className="dropDownItem" onClick={handleLogout}>
             <i className="fa-solid fa-arrow-right-from-bracket"></i> Log out
           </div>
         </div>
